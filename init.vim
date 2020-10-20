@@ -8,28 +8,41 @@ endif
 call plug#begin()
 
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'neoclide/coc.nvim' , { 'branch' : 'release' }
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'mileszs/ack.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
-Plug 'rking/ag.vim'
+Plug 'leafgarland/typescript-vim'
+Plug 'jparise/vim-graphql'
+Plug 'maxmellon/vim-jsx-pretty'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'rakr/vim-one'
 Plug 'morhetz/gruvbox'
+Plug 'connorholyday/vim-snazzy'
 Plug 'w0rp/ale'
 Plug 'tpope/vim-surround'
-" Plug 'itchyny/lightline.vim'
+Plug 'itchyny/lightline.vim'
+Plug 'chrisbra/csv.vim'
 
 call plug#end()
 
-syntax enable
-colorscheme gruvbox
-set background=dark
+let g:gruvbox_italic=1
+set termguicolors
 
-let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_contrast_dark = 'soft'
+let g:gruvbox_contrast_light = 'medium'
+
+syntax enable
+colorscheme one 
+set background=light
+
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 let g:jsx_ext_required = 0
 let g:javascript_plugin_flow = 1
 let g:ag_working_path_mode="r"
@@ -43,8 +56,11 @@ let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
 let g:ale_open_list = 1
 " let g:ale_set_quickfix = 1
+let g:csv_highlight_column = 'y'
 
 let NERDTreeShowHidden = 1
+
+let g:coc_global_extensions = [ 'coc-tsserver' ]
 
 "Credit joshdick
 "Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
@@ -65,17 +81,13 @@ endif
 
 
 let g:lightline = {
-      \ 'colorscheme': 'gruvbox',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
-      \ },
-      \ }
+      \ 'colorscheme': 'one',
+     \ }
 
 set noshowmode
+
+let g:one_allow_italics = 1 
+highlight Comment cterm=italic gui=italic
 
 " Asynchronous Lint Engine (ALE)
 " Limit linters used for JavaScript.
@@ -99,7 +111,16 @@ let g:ale_echo_msg_format = '%linter% says %s'
 nnoremap <leader>an :ALENextWrap<cr>
 nnoremap <leader>ap :ALEPreviousWrap<cr>
 
+" https://rietta.com/blog/hide-gitignored-files-fzf-vim/
+" fzf file fuzzy search that respects .gitignore
+" If in git directory, show only files that are committed, staged, or unstaged
+" else use regular :Files
+nnoremap <expr> <leader>f (len(system('git rev-parse')) ? ':Files' : ':GFiles --exclude-standard --others --cached')."\<cr>"
+nnoremap <Leader>s :Ack!<Space>
+
+"Paste in visual mode without copying
+xnoremap p pgvy
+
 set expandtab
 set shiftwidth=2
 set softtabstop=2
-
